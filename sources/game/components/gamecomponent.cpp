@@ -1,0 +1,1 @@
+#include "gamecomponent.h"
