@@ -1,0 +1,34 @@
+{
+	"templates" : [
+		{
+			"name" : "command_center",
+			"components" : ["transform", "render", "stats", "production"],
+			"components_defaults" : {
+				"stats" : {
+					"hit_points" : 500
+				},
+				"render" : {
+					"mesh" : ""
+				}
+			}
+		},
+		{
+			"name" : "scv",
+			"components" : ["transform", "render", "stats", "resource", "weapon"],
+			"components_defaults" : {
+				"stats" : {
+					"hit_points" : 50,
+					"move_speed" : 10
+				},
+				"weapon" : {
+					"damage" : 10,
+					"speed" : 2.0,
+					"range" : 5
+				},
+				"render" : {
+					"mesh" : "ayam.dae"
+				}
+			}
+		}
+	]
+}

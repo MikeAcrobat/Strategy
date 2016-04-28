@@ -1,5 +1,5 @@
 #include "gamesystem.h"
-
+/*
 void MovementProcess::update(std::vector<Entity::Ptr>& entities, float dt) {
 	for (Entity::Ptr & entity : entities) {
 		TransformComponent::Ptr transformation = entity->get_component<TransformComponent>();
@@ -22,7 +22,7 @@ void MovementProcess::update(std::vector<Entity::Ptr>& entities, float dt) {
 		}
 	}
 }
-
+*/
 ProductionProcess::ProductionProcess(std::vector<Entity::Ptr>& storage, EntityFactory & factory) : m_factory(factory), m_storage(storage)
 {
 }
@@ -37,15 +37,15 @@ void ProductionProcess::update(std::vector<Entity::Ptr>& entities, float dt) {
 				production->in_progress = false;
 				// make new object
 				Entity::Ptr result_entity = m_factory.create_object(production->produce_result);
-				MovementComponent::Ptr movement = result_entity->get_component<MovementComponent>();
-				if (movement) {
-					movement->state = MovementComponent::ON_MOVE;
-					movement->destination = production->production_point;
-					TransformComponent::Ptr transform = entity->get_component<TransformComponent>();
-					EntityHelpers::set_position(result_entity, transform->position);
-				} else {
+				//MovementComponent::Ptr movement = result_entity->get_component<MovementComponent>();
+				//if (movement) {
+				//	movement->state = MovementComponent::ON_MOVE;
+				//	movement->destination = production->production_point;
+				//	TransformComponent::Ptr transform = entity->get_component<TransformComponent>();
+				//	EntityHelpers::set_position(result_entity, transform->position);
+				//} else {
 					EntityHelpers::set_position(result_entity, production->production_point);
-				}
+				//}
 
 				m_storage.push_back(result_entity);
 			}

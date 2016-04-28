@@ -8,7 +8,7 @@
 static Entity::Ptr ccc;
 
 Level::Level(irr::IrrlichtDevice * mgr, EventReceiver * events) :
-	m_device(mgr), m_events(events), m_factory(m_entity_system, m_device->getSceneManager())
+	m_device(mgr), m_events(events), m_factory(m_entity_system, m_device->getSceneManager()), m_selector(m_entity_system)
 {
 
 	auto * smgr = m_device->getSceneManager();
@@ -39,11 +39,11 @@ Level::Level(irr::IrrlichtDevice * mgr, EventReceiver * events) :
 void Level::update(float dt) {
 	std::vector<Entity::Ptr> new_entities;
 	{
-		std::vector<Entity::Ptr> entities;
-		m_entity_system.get_entities<MovementComponent, TransformComponent>(entities);
+//		std::vector<Entity::Ptr> entities;
+//		m_entity_system.get_entities<MovementComponent, TransformComponent>(entities);
 
-		MovementProcess process;
-		process.update(entities, dt);
+//		MovementProcess process;
+//		process.update(entities, dt);
 	}
 	{
 		std::vector<Entity::Ptr> entities;
@@ -114,12 +114,17 @@ void Level::handle_game(const irr::SEvent & e)
 	}
 
 	if (e.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-		//if (building)
-		{
-			int x = e.MouseInput.X;
-			int y = e.MouseInput.Y;
 
-			m_device->getSceneManager();
+		if (e.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+			m_selector.start_selection(m_camera->getTarget());
+		}
+
+		if (e.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+			m_selector.update_selection(m_camera->getTarget());
+		}
+
+		if (e.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+			m_selector.end_selection(m_camera->getTarget());
 		}
 	}
 }
@@ -127,19 +132,59 @@ void Level::handle_game(const irr::SEvent & e)
 void Level::place_object(const std::string & name) {
 	Entity::Ptr entity = m_factory.create_object(name);
 	if (entity) {
-		TransformComponent::Ptr transform = entity->get_component<TransformComponent>();
-		if (transform) {
-			transform->position = m_camera->getTarget();
-		}
-
-		RenderComponent::Ptr render = entity->get_component<RenderComponent>();
-		if (render) {
-			render->node = m_device->getSceneManager()->addSphereSceneNode(40);
-			render->node->setPosition(m_camera->getTarget());
-		}
-
-		ccc = entity;
-
+		EntityHelpers::set_position(entity, m_camera->getTarget());
 		m_entities.push_back(entity);
+	}
+
+	ccc = entity;
+}
+
+Selector::Selector(EntitySystem & enitites) : enitites(enitites), selecting(false)
+{
+}
+
+void Selector::start_selection(irr::core::vector3df point)
+{
+	if (selecting) {
+		return;
+	}
+
+	selecting = true;
+	start = point;
+	end = point;
+	update_selection_state();
+}
+
+void Selector::update_selection(irr::core::vector3df point)
+{
+	if (selecting) {
+		end = point;
+		update_selection_state();
+	}
+}
+
+void Selector::end_selection(irr::core::vector3df point)
+{
+	if (selecting) {
+		end = point;
+		update_selection_state();
+		selecting = false;
+	}
+}
+
+void Selector::update_selection_state()
+{
+	std::vector<Entity::Ptr> entities;
+	enitites.get_entities<TransformComponent, StatsComponent>(entities);
+
+	irr::core::vector3df y_offset(0, 100, 0);
+
+	irr::core::aabbox3df bbox(start + y_offset, end - y_offset);
+	bbox.repair();
+
+	for (Entity::Ptr entity : entities) {
+		TransformComponent::Ptr transform = entity->get_component<TransformComponent>();
+		bool selected = bbox.isPointInside(transform->position);
+		EntityHelpers::update_selection(entity, selected);
 	}
 }

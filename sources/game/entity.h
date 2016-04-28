@@ -13,6 +13,7 @@ struct Entity {
 	std::map<Component::Type, Component::Ptr> m_components;
 
 	typedef std::shared_ptr<Entity> Ptr;
+	typedef std::weak_ptr<Entity> Weak;
 };
 
 template<class T>
@@ -24,4 +25,5 @@ class EntityHelpers {
 public:
 	static void set_position(Entity::Ptr, const irr::core::vector3df &);
 	static void initialize_components(Entity::Ptr, irr::scene::ISceneManager * manager);
+	static void update_selection(Entity::Ptr, bool selected);
 };

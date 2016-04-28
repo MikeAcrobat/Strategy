@@ -7,8 +7,24 @@
 
 class EventReceiver;
 
-class Level
-{
+class Selector {
+public:
+	Selector(EntitySystem & enitites);
+
+	void start_selection(irr::core::vector3df);
+	void update_selection(irr::core::vector3df);
+	void end_selection(irr::core::vector3df);
+
+private:
+	void update_selection_state();
+
+	EntitySystem & enitites;
+	irr::core::vector3df start;
+	irr::core::vector3df end;
+	bool selecting;
+};
+
+class Level {
 public:
 
 	Level(irr::IrrlichtDevice *, EventReceiver *);
@@ -30,6 +46,8 @@ private:
 
 	EntitySystem m_entity_system;
 	EntityFactory m_factory;
+
+	Selector m_selector;
 
 	//GameObjectSystem m_objects_by_type;
 };

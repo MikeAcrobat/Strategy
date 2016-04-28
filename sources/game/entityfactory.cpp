@@ -12,9 +12,9 @@ template<> bool parse_component(TransformComponent::Ptr & component, const Json:
 	return true;
 }
 
-template<> bool parse_component(MovementComponent::Ptr & component, const Json::Value & value) {
-	component->speed = value.get("speed", 0).asFloat();
-	component->state = MovementComponent::STAND;
+template<> bool parse_component(StatsComponent::Ptr & component, const Json::Value & value) {
+	component->hit_points = value.get("hit_points", 100).asInt();
+	component->move_speed = value.get("move_speed", 0).asFloat();
 	return false;
 }
 
@@ -28,6 +28,7 @@ template<> bool parse_component(ProductionComponent::Ptr & component, const Json
 	component->produce_result = "";
 	component->time_remaning = 0;
 	component->in_progress = 0;
+	component->can_produce = value.get("can_produce", true).asBool();
 	return false;
 }
 
@@ -35,18 +36,26 @@ template<> bool parse_component(ResourceComponent::Ptr & component, const Json::
 	return false;
 }
 
-template<> bool parse_component(WeaponComponent::Ptr & component, const Json::Value & value) {
-	component->cooldown = value.get("cooldown", 100).asFloat();
-	component->dmg = value.get("damage", 100).asInt();
+template<> bool parse_component(AIComponent::Ptr & component, const Json::Value & value) {
 	return false;
 }
 
-template<> bool parse_component(HealthComponent::Ptr & component, const Json::Value & value) {
-	component->hit_points = value.get("hit_points", 100).asInt();
+template<> bool parse_component(WeaponComponent::Ptr & component, const Json::Value & value) {
+	component->attack_speed = value.get("speed", 1).asFloat();
+	component->attack_damage = value.get("damage", 1).asInt();
+	component->attack_range = value.get("range", 1).asFloat();
 	return false;
 }
 
 template<> bool parse_component(CollisionComponent::Ptr & component, const Json::Value & value) {
+	return false;
+}
+
+template<> bool parse_component(CostComponent::Ptr & component, const Json::Value & value) {
+	return false;
+}
+
+template<> bool parse_component(MiningComponent::Ptr & component, const Json::Value & value) {
 	return false;
 }
 
@@ -121,13 +130,15 @@ EntityFactory::EntityFactory(EntitySystem & entity_system, irr::scene::ISceneMan
 
 void EntityFactory::register_components() {
 	component_helpers["transform"] = ComponentHelper<TransformComponent>();
-	component_helpers["movement"] = ComponentHelper<MovementComponent>();
+	component_helpers["stats"] = ComponentHelper<StatsComponent>();
 	component_helpers["render"] = ComponentHelper<RenderComponent>();
 	component_helpers["production"] = ComponentHelper<ProductionComponent>();
 	component_helpers["resouce"] = ComponentHelper<ResourceComponent>();
-	component_helpers["health"] = ComponentHelper<HealthComponent>();
+	component_helpers["ai"] = ComponentHelper<AIComponent>();
 	component_helpers["weapon"] = ComponentHelper<WeaponComponent>();
 	component_helpers["collision"] = ComponentHelper<CollisionComponent>();
+	component_helpers["cost"] = ComponentHelper<CostComponent>();
+	component_helpers["miner"] = ComponentHelper<MiningComponent>();
 }
 
 bool EntityFactory::register_templates(const std::string & filename)
