@@ -1,4 +1,5 @@
 #include "gamesystem.h"
+#include "actions/actions.h"
 /*
 void MovementProcess::update(std::vector<Entity::Ptr>& entities, float dt) {
 	for (Entity::Ptr & entity : entities) {
@@ -23,8 +24,21 @@ void MovementProcess::update(std::vector<Entity::Ptr>& entities, float dt) {
 	}
 }
 */
-ProductionProcess::ProductionProcess(std::vector<Entity::Ptr>& storage, EntityFactory & factory) : m_factory(factory), m_storage(storage)
-{
+
+void UpdateActions::update(std::vector<Entity::Ptr>& entities, float dt) {
+	for (Entity::Ptr & entity : entities) {
+		CommandsComponent::Ptr commands = entity->get_component<CommandsComponent>();
+		if (commands && commands->actions.size() > 0) {
+			Action::Ptr & action = commands->actions.front();
+			if (action->update(entity, dt)) {
+				commands->actions.pop_front();
+			}
+		}
+	}
+}
+
+/*
+ProductionProcess::ProductionProcess(std::vector<Entity::Ptr>& storage, EntityFactory & factory) : m_factory(factory), m_storage(storage) {
 }
 
 void ProductionProcess::update(std::vector<Entity::Ptr>& entities, float dt) {
@@ -52,3 +66,4 @@ void ProductionProcess::update(std::vector<Entity::Ptr>& entities, float dt) {
 		}
 	}
 }
+*/

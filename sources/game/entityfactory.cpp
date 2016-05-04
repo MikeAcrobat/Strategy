@@ -33,10 +33,12 @@ template<> bool parse_component(ProductionComponent::Ptr & component, const Json
 }
 
 template<> bool parse_component(ResourceComponent::Ptr & component, const Json::Value & value) {
+	component->resource_cap = value.get("resource_cap", 10).asInt();
+	component->resource_amount = value.get("resource_amount", 10).asInt();
 	return false;
 }
 
-template<> bool parse_component(AIComponent::Ptr & component, const Json::Value & value) {
+template<> bool parse_component(CommandsComponent::Ptr & component, const Json::Value & value) {
 	return false;
 }
 
@@ -52,10 +54,6 @@ template<> bool parse_component(CollisionComponent::Ptr & component, const Json:
 }
 
 template<> bool parse_component(CostComponent::Ptr & component, const Json::Value & value) {
-	return false;
-}
-
-template<> bool parse_component(MiningComponent::Ptr & component, const Json::Value & value) {
 	return false;
 }
 
@@ -134,11 +132,10 @@ void EntityFactory::register_components() {
 	component_helpers["render"] = ComponentHelper<RenderComponent>();
 	component_helpers["production"] = ComponentHelper<ProductionComponent>();
 	component_helpers["resouce"] = ComponentHelper<ResourceComponent>();
-	component_helpers["ai"] = ComponentHelper<AIComponent>();
+	component_helpers["commands"] = ComponentHelper<CommandsComponent>();
 	component_helpers["weapon"] = ComponentHelper<WeaponComponent>();
 	component_helpers["collision"] = ComponentHelper<CollisionComponent>();
 	component_helpers["cost"] = ComponentHelper<CostComponent>();
-	component_helpers["miner"] = ComponentHelper<MiningComponent>();
 }
 
 bool EntityFactory::register_templates(const std::string & filename)

@@ -22,6 +22,29 @@ void EntityHelpers::set_position(Entity::Ptr entity, const irr::core::vector3df 
 	}
 }
 
+void EntityHelpers::set_direction(Entity::Ptr entity, const irr::core::vector3df & direction) {
+	if (!entity) return;
+
+	TransformComponent::Ptr transform = entity->get_component<TransformComponent>();
+	if (transform) {
+		transform->direction = direction;
+	}
+
+	RenderComponent::Ptr render = entity->get_component<RenderComponent>();
+	if (render && render->node) {
+		render->node->setRotation(direction.getHorizontalAngle());
+	}
+}
+
+void EntityHelpers::update_transformation(Entity::Ptr & entity) {
+	TransformComponent::Ptr transform = entity->get_component<TransformComponent>();
+	RenderComponent::Ptr render = entity->get_component<RenderComponent>();
+	if (transform && render && render->node) {
+		render->node->setPosition(transform->position);
+		render->node->setRotation(transform->direction.getHorizontalAngle());
+	}
+}
+
 void EntityHelpers::initialize_components(Entity::Ptr entity, irr::scene::ISceneManager * manager) {
 	if (!entity) return;
 
@@ -44,9 +67,9 @@ void EntityHelpers::initialize_components(Entity::Ptr entity, irr::scene::IScene
 	}
 }
 
-void EntityHelpers::update_selection(Entity::Ptr entity, bool selected)
-{
+void EntityHelpers::update_selection(Entity::Ptr entity, bool selected) {
 	if (!entity) return;
+
 	StatsComponent::Ptr stats = entity->get_component<StatsComponent>();
 
 	if (!stats) return;

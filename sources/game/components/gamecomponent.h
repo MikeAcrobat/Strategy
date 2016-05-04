@@ -3,8 +3,7 @@
 #include "irrlicht.h"
 #include <memory>
 #include <string>
-
-class AIStrategy;
+#include <deque>
 
 enum ResourceType
 {
@@ -34,6 +33,8 @@ struct StatsComponent : public Component {
 
 	bool selected;
 
+	int mine_speed;	// used for mining, greater than 0 if we can mine
+
 	typedef std::shared_ptr<StatsComponent> Ptr;
 };
 
@@ -62,17 +63,20 @@ struct ResourceComponent : public Component {
 	static const Type family = 5;
 
 	ResourceType resource_type;
-	int resource_count;
+	int resource_amount;
+	int resource_cap;
 
 	typedef std::shared_ptr<ResourceComponent> Ptr;
 };
 
-struct AIComponent : public Component {
+class Action;
+
+struct CommandsComponent : public Component {
 	static const Type family = 6;
 
-	std::shared_ptr<AIStrategy> strategy;
-	
-	typedef std::shared_ptr<AIComponent> Ptr;
+	std::deque<std::shared_ptr<Action>> actions;
+		
+	typedef std::shared_ptr<CommandsComponent> Ptr;
 };
 
 struct WeaponComponent : public Component {
@@ -100,14 +104,4 @@ struct CostComponent : public Component {
 	ResourceType resource_type;
 
 	typedef std::shared_ptr<CostComponent> Ptr;
-};
-
-struct MiningComponent : public Component {
-	static const Type family = 10;
-
-	float mining_speed;
-	int resource_collected;
-	ResourceType resource_type;
-
-	typedef std::shared_ptr<MiningComponent> Ptr;
 };

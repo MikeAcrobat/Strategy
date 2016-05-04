@@ -11,17 +11,17 @@ struct EntitySystem
 	}
 
 	template<typename T>
-	bool has(Entity::Ptr entity) {
+	bool has(Entity::Ptr entity) const {
 		return entity->get_component<T>() != nullptr;
 	}
 
 	template<typename T, typename K, typename ...Types>
-	bool has(Entity::Ptr entity) {
+	bool has(Entity::Ptr entity) const {
 		return entity->get_component<T>() != nullptr && has<K, Types...>(entity);
 	}
 
 	template<typename T>
-	void get_entities(std::vector<Entity::Ptr> &result) {
+	void get_entities(std::vector<Entity::Ptr> &result) const {
 		auto iterPair = m_component_store.equal_range(T::family);
 		for (auto iter = iterPair.first; iter != iterPair.second; ++iter) {
 			result.push_back(iter->second);
@@ -29,7 +29,7 @@ struct EntitySystem
 	}
 
 	template<typename T, typename K, typename ...Types>
-	void get_entities(std::vector<Entity::Ptr> &result) {
+	void get_entities(std::vector<Entity::Ptr> &result) const {
 		auto iterPair = m_component_store.equal_range(T::family);
 		for (auto iter = iterPair.first; iter != iterPair.second; ++iter) {
 			if (has<K, Types...>(iter->second)) {

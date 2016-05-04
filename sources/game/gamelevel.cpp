@@ -5,6 +5,9 @@
 
 #include "systems/gamesystem.h"
 
+#include "actions/actions.h"
+
+
 static Entity::Ptr ccc;
 
 Level::Level(irr::IrrlichtDevice * mgr, EventReceiver * events) :
@@ -46,10 +49,17 @@ void Level::update(float dt) {
 //		process.update(entities, dt);
 	}
 	{
+		//std::vector<Entity::Ptr> entities;
+		//m_entity_system.get_entities<ProductionComponent>(entities);
+		//
+		//ProductionProcess process(new_entities, m_factory);
+		//process.update(entities, dt);
+	}
+	{
 		std::vector<Entity::Ptr> entities;
-		m_entity_system.get_entities<ProductionComponent>(entities);
+		m_entity_system.get_entities<CommandsComponent>(entities);
 
-		ProductionProcess process(new_entities, m_factory);
+		UpdateActions process;
 		process.update(entities, dt);
 	}
 	
@@ -98,6 +108,16 @@ void Level::handle_game(const irr::SEvent & e)
 
 		if (e.KeyInput.Key == irr::KEY_KEY_S && !e.KeyInput.PressedDown) {
 			place_object("scv");
+		}
+
+		if (e.KeyInput.Key == irr::KEY_KEY_R && !e.KeyInput.PressedDown) {
+			std::vector<Entity::Ptr> entities;
+			m_entity_system.get_entities<CommandsComponent>(entities);
+
+			for (Entity::Ptr & entity : entities) {
+				CommandsComponent::Ptr commands = entity->get_component<CommandsComponent>();
+				commands->actions.push_back(std::make_shared<Walk>(irr::core::vector3df(rand() % 200 + 100, 0, rand() % 200 + 100)));
+			}
 		}
 
 		if (e.KeyInput.Key == irr::KEY_KEY_B && !e.KeyInput.PressedDown) {

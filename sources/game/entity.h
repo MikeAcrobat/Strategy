@@ -24,6 +24,8 @@ inline std::shared_ptr<T> Entity::get_component() const {
 class EntityHelpers {
 public:
 	static void set_position(Entity::Ptr, const irr::core::vector3df &);
-	static void initialize_components(Entity::Ptr, irr::scene::ISceneManager * manager);
-	static void update_selection(Entity::Ptr, bool selected);
+	static void set_direction(Entity::Ptr, const irr::core::vector3df &);
+	static void update_transformation(Entity::Ptr &);
+	static void initialize_components(Entity::Ptr, irr::scene::ISceneManager *);
+	static void update_selection(Entity::Ptr, bool);
 };
